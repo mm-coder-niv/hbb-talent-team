@@ -2,9 +2,9 @@
 const CONFIG = {
   ashbySlug:    "Nivoda",
   slackToken:   process.env.SLACK_BOT_TOKEN,
-  slackChannel: "#general",
+  slackChannel: "#talent-team",
   anthropicKey: process.env.ANTHROPIC_API_KEY,
-  jobCount:     6,
+  jobCount:     4,
 };
 // ─────────────────────────────────────────────────────────────────────────────
 
@@ -26,15 +26,16 @@ async function fetchJobs(slug) {
 
 async function pickAndFormatJobs(jobs, n) {
   const prompt = `
-You are a recruiting-comms assistant for the Hiring Brilliance Bulletin. Here is a JSON array of open roles:
+You are a recruiting-comms assistant writing the Hiring Brilliance Bulletin — a weekly internal Slack message encouraging employees to refer people in their network to open roles.
+
+Here is a JSON array of open roles:
 
 ${JSON.stringify(jobs, null, 2)}
 
 Task:
 1. Pick the ${n} most compelling / diverse roles to highlight this week.
    Prefer a mix of seniority levels, teams, and location types.
-2. For each chosen role write ONE punchy sentence (max 15 words) that makes
-   the role sound exciting — focus on impact, not just responsibilities.
+2. For each chosen role write TWO sentences (max 20 words total). First sentence sells the role and its impact. Second sentence triggers a referral thought using language like "Know someone who...", "Who's the best X you've ever worked with?", "Ever worked with someone who...", "Thought of anyone who...". Never use "tag" or "comment".
 3. Return ONLY a JSON array (no markdown fences, no preamble) with objects:
    { "id", "title", "team", "location", "remote", "url", "hook" }
 `.trim();
@@ -73,7 +74,7 @@ function buildSlackBlocks(picks) {
     },
     {
       type: "context",
-      elements: [{ type: "mrkdwn", text: `*${today}* · ${picks.length} roles worth a look` }],
+      elements: [{ type: "mrkdwn", text: `*${today}* · Know someone brilliant? Here are this week's top roles to share` }],
     },
     { type: "divider" },
   ];
@@ -88,7 +89,7 @@ function buildSlackBlocks(picks) {
         },
         accessory: {
           type: "button",
-          text:  { type: "plain_text", text: "Apply →", emoji: true },
+          text:  { type: "plain_text", text: "Refer →", emoji: true },
           url:   job.url,
           style: "primary",
         },
@@ -108,7 +109,7 @@ function buildSlackBlocks(picks) {
     type: "context",
     elements: [{
       type: "mrkdwn",
-      text: `See all open roles → <https://jobs.ashbyhq.com/${CONFIG.ashbySlug}|jobs.ashbyhq.com/${CONFIG.ashbySlug}>`,
+      text: `💡 A referral from you could change someone's career — and earn you a bonus. See all open roles → <https://jobs.ashbyhq.com/${CONFIG.ashbySlug}|jobs.ashbyhq.com/${CONFIG.ashbySlug}>`,
     }],
   });
 
