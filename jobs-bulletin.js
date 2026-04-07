@@ -4,7 +4,7 @@ const CONFIG = {
   slackToken:   process.env.SLACK_BOT_TOKEN,
   slackChannel: "#talent-team",
   anthropicKey: process.env.ANTHROPIC_API_KEY,
-  jobCount:     4,
+  jobCount:     6,
 };
 // ─────────────────────────────────────────────────────────────────────────────
 
@@ -35,7 +35,7 @@ ${JSON.stringify(jobs, null, 2)}
 Task:
 1. Pick the ${n} most compelling / diverse roles to highlight this week.
    Prefer a mix of seniority levels, teams, and location types.
-2. For each chosen role write TWO sentences (max 20 words total). First sentence sells the role and its impact. Second sentence triggers a referral thought using language like "Know someone who...", "Who's the best X you've ever worked with?", "Ever worked with someone who...", "Thought of anyone who...". Never use "tag" or "comment".
+2. For each chosen role write THREE sentences (max 40 words total). First sentence sells the role and its impact. Second sentence describes what the person will actually do day-to-day — write in third person, never use "you" or "your" as these are referral prompts not job ads. Third sentence triggers a referral thought using language like "Know someone who...", "Who's the best X you've ever worked with?", "Ever worked with someone who...", "Thought of anyone who...". Never use "tag", "comment", "you" or "your".
 3. Return ONLY a JSON array (no markdown fences, no preamble) with objects:
    { "id", "title", "team", "location", "remote", "url", "hook" }
 `.trim();
@@ -70,7 +70,7 @@ function buildSlackBlocks(picks) {
   const blocks = [
     {
       type: "header",
-      text: { type: "plain_text", text: "💎 Hiring Brilliance Bulletin", emoji: true },
+      text: { type: "plain_text", text: "💎 Hiring Brilliance Bulletin 💎", emoji: true },
     },
     {
       type: "context",
@@ -98,7 +98,8 @@ function buildSlackBlocks(picks) {
         type: "context",
         elements: [{
           type: "mrkdwn",
-          text: `🏢 ${job.team}  ·  📍 ${job.location}  ·  🌐 ${job.remote}`,
+  const remoteEmoji = job.remote === "Remote OK" ? "🌍" : job.remote === "Hybrid" ? "🏡" : "🏢";
+          text: `${remoteEmoji} ${job.remote}  ·  📍 ${job.location}  ·  🏢 ${job.team}`,
         }],
       },
       { type: "divider" },
