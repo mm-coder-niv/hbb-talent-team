@@ -33,8 +33,7 @@ Here is a JSON array of open roles:
 ${JSON.stringify(jobs, null, 2)}
 
 Task:
-1. Pick the ${n} most compelling / diverse roles to highlight this week.
-   Prefer a mix of seniority levels, teams, and location types.
+1. Pick ${n} roles to highlight this week. Every role must be different — no duplicates by title, team, or seniority level. Prefer maximum diversity across teams, locations, and seniority.
 2. For each chosen role write THREE sentences (max 40 words total). First sentence sells the role and its impact. Second sentence describes what the person will actually do day-to-day — write in third person, never use "you" or "your" as these are referral prompts not job ads. Third sentence triggers a referral thought using language like "Know someone who...", "Who's the best X you've ever worked with?", "Ever worked with someone who...", "Thought of anyone who...". Never use "tag", "comment", "you" or "your".
 3. Return ONLY a JSON array (no markdown fences, no preamble) with objects:
    { "id", "title", "team", "location", "remote", "url", "hook" }
