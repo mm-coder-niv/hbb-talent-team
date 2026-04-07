@@ -104,7 +104,7 @@ function buildSlackBlocks(picks) {
         type: "context",
         elements: [{
           type: "mrkdwn",
-          text: `${remoteEmoji} ${job.remote}  ·  📍 ${job.location}  ·  🏢 ${job.team}`,
+          text: `${remoteEmoji} ${job.remote}  ·  📍 ${job.location}  ·  💼 ${job.team}`,
         }],
       },
       { type: "divider" },
