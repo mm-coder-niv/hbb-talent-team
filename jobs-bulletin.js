@@ -61,6 +61,12 @@ Task:
   return JSON.parse(raw.replace(/```json|```/g, "").trim());
 }
 
+function getRemoteEmoji(remote) {
+  if (remote === "Remote OK") return "🌍";
+  if (remote === "Hybrid")    return "🏡";
+  return "🏢";
+}
+
 function buildSlackBlocks(picks) {
   const today = new Date().toLocaleDateString("en-GB", {
     weekday: "long", day: "numeric", month: "long",
@@ -79,6 +85,7 @@ function buildSlackBlocks(picks) {
   ];
 
   for (const job of picks) {
+    const remoteEmoji = getRemoteEmoji(job.remote);
     blocks.push(
       {
         type: "section",
@@ -97,7 +104,6 @@ function buildSlackBlocks(picks) {
         type: "context",
         elements: [{
           type: "mrkdwn",
-  const remoteEmoji = job.remote === "Remote OK" ? "🌍" : job.remote === "Hybrid" ? "🏡" : "🏢";
           text: `${remoteEmoji} ${job.remote}  ·  📍 ${job.location}  ·  🏢 ${job.team}`,
         }],
       },
@@ -125,7 +131,7 @@ async function postToSlack(blocks) {
     },
     body: JSON.stringify({
       channel: CONFIG.slackChannel,
-      text:    "💎 Hiring Brilliance Bulletin",
+      text:    "💎 Hiring Brilliance Bulletin 💎",
       blocks,
     }),
   });
