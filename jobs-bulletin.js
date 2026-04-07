@@ -3,7 +3,7 @@ const CONFIG = {
   ashbySlug:    "Nivoda",
   slackToken:   process.env.SLACK_BOT_TOKEN,
   slackChannel: "#general",
-  anthropicKey: process.env.ANTHROPIC_API_KEY,
+  geminiKey:    process.env.GEMINI_API_KEY,
   jobCount:     6,
 };
 // ─────────────────────────────────────────────────────────────────────────────
@@ -39,22 +39,17 @@ Task:
    { "id", "title", "team", "location", "remote", "url", "hook" }
 `.trim();
 
-  const res = await fetch("https://api.anthropic.com/v1/messages", {
+  const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${CONFIG.geminiKey}`;
+  const res = await fetch(url, {
     method:  "POST",
-    headers: {
-      "Content-Type":         "application/json",
-      "x-api-key":            CONFIG.anthropicKey,
-      "anthropic-version":    "2023-06-01",
-    },
+    headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
-      model:      "claude-sonnet-4-5",
-      max_tokens: 1000,
-      messages:   [{ role: "user", content: prompt }],
+      contents: [{ parts: [{ text: prompt }] }],
     }),
   });
-  if (!res.ok) throw new Error(`Anthropic API error ${res.status}`);
+  if (!res.ok) throw new Error(`Gemini API error ${res.status}`);
   const data = await res.json();
-  const raw  = data.content.find(b => b.type === "text")?.text ?? "[]";
+  const raw  = data.candidates?.[0]?.content?.parts?.[0]?.text ?? "[]";
   return JSON.parse(raw.replace(/```json|```/g, "").trim());
 }
 
@@ -137,7 +132,7 @@ async function postToSlack(blocks) {
     const jobs = await fetchJobs(CONFIG.ashbySlug);
     console.log(`   Found ${jobs.length} open roles.`);
 
-    console.log("🤖 Asking Claude to pick and write hooks…");
+    console.log("🤖 Asking Gemini to pick and write hooks…");
     const picks = await pickAndFormatJobs(jobs, CONFIG.jobCount);
     console.log(`   Selected: ${picks.map(p => p.title).join(", ")}`);
 
